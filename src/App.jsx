@@ -4,12 +4,11 @@ import React from 'react';
 import Home from './pages/Home';
 import Favorites from './pages/Favorites';
 import AppContext from './components/context';
-
 import Drawer from './Drawer/Drawer';
 import Header from './components/Header';
 import Orders from './pages/Orders';
-
 import { useEffect, useState } from 'react';
+import Form from './components/Form';
 
 function App() {
   const [items, setItems] = useState([]);
@@ -19,6 +18,7 @@ function App() {
   const [favorites, setFavorites] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -27,7 +27,7 @@ function App() {
             axios.get('https://6327175fba4a9c47533089b9.mockapi.io/cart'),
             axios.get('https://6327175fba4a9c47533089b9.mockapi.io/favorites'),
             axios.get('https://6327175fba4a9c47533089b9.mockapi.io/items'),
-          ]); 
+          ]);
 
         setIsLoading(false);
 
@@ -46,12 +46,12 @@ function App() {
 
   const onAddtoCard = (obj) => {
     try {
+      setCartItems((prev) =>
+        prev.filter((item) => Number(item.id) !== Number(obj.id))
+      );
       if (cartItems.find((item) => Number(item.id) === Number(obj.id))) {
         axios.delete(
           `https://6327175fba4a9c47533089b9.mockapi.io/cart/${obj.id}`
-        );
-        setCartItems((prev) =>
-          prev.filter((item) => Number(item.id) !== Number(obj.id))
         );
       } else {
         axios.post('https://6327175fba4a9c47533089b9.mockapi.io/cart', obj);
@@ -68,7 +68,9 @@ function App() {
   const onRemoveItem = (id) => {
     try {
       axios.delete(`https://6327175fba4a9c47533089b9.mockapi.io/cart/${id}`);
-      setCartItems((prev) => prev.filter((item) => Number(item.id) !== Number(id)))
+      setCartItems((prev) =>
+        prev.filter((item) => Number(item.id) !== Number(id))
+      );
     } catch (error) {
       {
         alert('Ошибка при удалении из корзины');
@@ -114,6 +116,7 @@ function App() {
         setOpenedCart,
         setCartItems,
         onAddtoCard,
+        
       }}
     >
       <div className="wrapper clear">
@@ -123,8 +126,9 @@ function App() {
           onRemove={onRemoveItem}
           opened={cartOpened}
         />
-
-        <Header onClickCart={() => setOpenedCart(true)} />
+        <Header
+          onClickCart={() => setOpenedCart(true)}
+        />
 
         <Routes>
           <Route
