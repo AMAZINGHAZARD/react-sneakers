@@ -4,7 +4,7 @@ import * as React from 'react';
 import Stack from '@mui/material/Stack';
 import OpenCreateForm from './OpenCreateForm';
 
-function Header({ onClickForm, onClickCart, onCloseCart }) {
+function Header({ onClickCart }) {
   const { totalPrice } = useCart();
   return (
     <header className="d-flex justify-between align-center">
@@ -21,7 +21,6 @@ function Header({ onClickForm, onClickCart, onCloseCart }) {
           </div>
         </div>
       </Link>
-      {/* {formOpened ?<ContainedButtons/> : null } */}
 
       <Stack
         direction="row"

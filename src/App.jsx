@@ -8,7 +8,7 @@ import Drawer from './Drawer/Drawer';
 import Header from './components/Header';
 import Orders from './pages/Orders';
 import { useEffect, useState } from 'react';
-import Form from './components/Form';
+import { getItems, getCart, getFavorites,deleteCart,postCart } from './apiHelper';
 
 function App() {
   const [items, setItems] = useState([]);
@@ -18,16 +18,11 @@ function App() {
   const [favorites, setFavorites] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-
   useEffect(() => {
     async function fetchData() {
       try {
         const [cartResponse, favoritesResponse, itemsResponse] =
-          await Promise.all([
-            axios.get('https://6327175fba4a9c47533089b9.mockapi.io/cart'),
-            axios.get('https://6327175fba4a9c47533089b9.mockapi.io/favorites'),
-            axios.get('https://6327175fba4a9c47533089b9.mockapi.io/items'),
-          ]);
+          await Promise.all([getCart(), getFavorites(), getItems()]);
 
         setIsLoading(false);
 
@@ -50,11 +45,9 @@ function App() {
         prev.filter((item) => Number(item.id) !== Number(obj.id))
       );
       if (cartItems.find((item) => Number(item.id) === Number(obj.id))) {
-        axios.delete(
-          `https://6327175fba4a9c47533089b9.mockapi.io/cart/${obj.id}`
-        );
+        deleteCart(obj.id)
       } else {
-        axios.post('https://6327175fba4a9c47533089b9.mockapi.io/cart', obj);
+        postCart(obj)
         setCartItems((prev) => [...prev, obj]);
       }
     } catch (error) {
@@ -116,7 +109,6 @@ function App() {
         setOpenedCart,
         setCartItems,
         onAddtoCard,
-        
       }}
     >
       <div className="wrapper clear">
@@ -126,9 +118,7 @@ function App() {
           onRemove={onRemoveItem}
           opened={cartOpened}
         />
-        <Header
-          onClickCart={() => setOpenedCart(true)}
-        />
+        <Header onClickCart={() => setOpenedCart(true)} />
 
         <Routes>
           <Route
