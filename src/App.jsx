@@ -4,12 +4,11 @@ import React from 'react';
 import Home from './pages/Home';
 import Favorites from './pages/Favorites';
 import AppContext from './components/context';
-
 import Drawer from './Drawer/Drawer';
 import Header from './components/Header';
 import Orders from './pages/Orders';
-
 import { useEffect, useState } from 'react';
+import { getItems, getCart, getFavorites,deleteCart,postCart } from './apiHelper';
 
 function App() {
   const [items, setItems] = useState([]);
@@ -23,11 +22,7 @@ function App() {
     async function fetchData() {
       try {
         const [cartResponse, favoritesResponse, itemsResponse] =
-          await Promise.all([
-            axios.get('https://6327175fba4a9c47533089b9.mockapi.io/cart'),
-            axios.get('https://6327175fba4a9c47533089b9.mockapi.io/favorites'),
-            axios.get('https://6327175fba4a9c47533089b9.mockapi.io/items'),
-          ]); 
+          await Promise.all([getCart(), getFavorites(), getItems()]);
 
         setIsLoading(false);
 
@@ -46,15 +41,13 @@ function App() {
 
   const onAddtoCard = (obj) => {
     try {
+      setCartItems((prev) =>
+        prev.filter((item) => Number(item.id) !== Number(obj.id))
+      );
       if (cartItems.find((item) => Number(item.id) === Number(obj.id))) {
-        axios.delete(
-          `https://6327175fba4a9c47533089b9.mockapi.io/cart/${obj.id}`
-        );
-        setCartItems((prev) =>
-          prev.filter((item) => Number(item.id) !== Number(obj.id))
-        );
+        deleteCart(obj.id)
       } else {
-        axios.post('https://6327175fba4a9c47533089b9.mockapi.io/cart', obj);
+        postCart(obj)
         setCartItems((prev) => [...prev, obj]);
       }
     } catch (error) {
@@ -68,7 +61,9 @@ function App() {
   const onRemoveItem = (id) => {
     try {
       axios.delete(`https://6327175fba4a9c47533089b9.mockapi.io/cart/${id}`);
-      setCartItems((prev) => prev.filter((item) => Number(item.id) !== Number(id)))
+      setCartItems((prev) =>
+        prev.filter((item) => Number(item.id) !== Number(id))
+      );
     } catch (error) {
       {
         alert('Ошибка при удалении из корзины');
@@ -123,7 +118,6 @@ function App() {
           onRemove={onRemoveItem}
           opened={cartOpened}
         />
-
         <Header onClickCart={() => setOpenedCart(true)} />
 
         <Routes>

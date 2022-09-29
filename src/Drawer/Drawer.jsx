@@ -6,15 +6,11 @@ import { useCart } from '../components/hooks/useCart';
 
 import styles from './Drawer.module.scss';
 
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
 function Drawer({ onCloseCart, onRemove, items = [], opened }) {
   const { cartItems, setCartItems, totalPrice } = useCart();
   const [isOrderComplete, setIsOrderComplete] = useState(false);
   const [orderId, setOrderId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-
-  
 
   const onClickOrder = async () => {
     try {
@@ -34,8 +30,6 @@ function Drawer({ onCloseCart, onRemove, items = [], opened }) {
         await axios.delete(
           'https://6327175fba4a9c47533089b9.mockapi.io/cart/' + item.id
         );
-        console.log(item);
-        await delay(1000);
       }
     } catch (error) {
       alert('Ошибка при создании заказа :(');
